@@ -4,11 +4,11 @@ import torchvision.transforms as transforms
 
 
 class ViewTransform(object):
-    def __init__(self):
+    def __init__(self, num):
+        self.num = num
         self.transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465],
-                                 std=[0.2023, 0.1994, 0.2010]),
+            transforms.Normalize(mean=[0.5], std=[0.5]),
             transforms.RandomHorizontalFlip(),
             transforms.RandomRotation(180),
             transforms.ColorJitter(),
@@ -16,6 +16,7 @@ class ViewTransform(object):
 
     def __call__(self, x):
         # add instances / stack for proposed research question
-        x1 = self.transform(x)
-        x2 = self.transform(x)
-        return (x1, x2)
+        transforms = []
+        for i in range(self.num):
+            transforms.append(self.transform(x))
+        return transforms
