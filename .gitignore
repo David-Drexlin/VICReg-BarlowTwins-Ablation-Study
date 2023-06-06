@@ -1,8 +1,6 @@
 data/
 __pycache__/
- 
 *.pth
 *.ckpt
+logs/
 lightning_logs/
-experiment/experiment_checkpoints
-*.ckpt
