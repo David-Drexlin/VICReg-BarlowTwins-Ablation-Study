@@ -3,6 +3,7 @@ import pytorch_lightning as pl
 import torch
 import torchvision
 from torch import nn
+from autoSSL.models.Backbone import pipe_backbone
 
 from lightly.data import LightlyDataset
 from lightly.data.multi_view_collate import MultiViewCollate
@@ -12,11 +13,11 @@ from lightly.transforms.simclr_transform import SimCLRTransform
 
 
 class SimCLR(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, backbone="resnet18"):
         super().__init__()
-        resnet = torchvision.models.resnet18()
-        self.backbone = nn.Sequential(*list(resnet.children())[:-1])
-        self.projection_head = SimCLRProjectionHead(512, 2048, 2048)
+ 
+        self.backbone, self.out_dim = pipe_backbone(backbone)
+        self.projection_head = SimCLRProjectionHead(self.out_dim, 2048, 2048)
         self.criterion = NTXentLoss()
 
     def forward(self, x):

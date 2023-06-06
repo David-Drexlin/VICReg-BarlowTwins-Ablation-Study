@@ -1,5 +1,4 @@
 import copy
-
 import pytorch_lightning as pl
 import torch
 import torchvision
@@ -12,14 +11,15 @@ from lightly.models.modules import MoCoProjectionHead
 from lightly.models.utils import deactivate_requires_grad, update_momentum
 from lightly.transforms.moco_transform import MoCoV2Transform
 from lightly.utils.scheduler import cosine_schedule
+from autoSSL.models.Backbone import pipe_backbone
 
 
 class MoCo(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, backbone="resnet18" ,stop_gradient=False, prjhead_dim=2048):
         super().__init__()
-        resnet = torchvision.models.resnet18()
-        self.backbone = nn.Sequential(*list(resnet.children())[:-1])
-        self.projection_head = MoCoProjectionHead(512, 512, 128)
+ 
+        self.backbone, self.out_dim = pipe_backbone(backbone)
+        self.projection_head = MoCoProjectionHead(self.out_dim, 512, 128)
 
         self.backbone_momentum = copy.deepcopy(self.backbone)
         self.projection_head_momentum = copy.deepcopy(self.projection_head)

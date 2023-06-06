@@ -1,64 +1,42 @@
-# Note: The model and training settings do not follow the reference settings
-# from the paper. The settings are chosen such that the example can easily be
-# run on a small dataset with a single GPU.
-
 import pytorch_lightning as pl
 import torch
-import torchvision
 from torch import nn
-
-from lightly.data import LightlyDataset
-from lightly.data.multi_view_collate import MultiViewCollate
 from lightly.loss import BarlowTwinsLoss
 from lightly.models.modules import BarlowTwinsProjectionHead
-from lightly.transforms.simclr_transform import SimCLRTransform
-
+from autoSSL.models.Backbone import pipe_backbone
+import pytorch_lightning as pl
+import torch
+from torch import nn
+from lightly.loss import BarlowTwinsLoss
+from lightly.models.modules import BarlowTwinsProjectionHead
+from autoSSL.models.Backbone import pipe_backbone
 
 class BarlowTwins(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, backbone="resnet18", stop_gradient=False, prjhead_dim=2048):
         super().__init__()
-        resnet = torchvision.models.resnet18()
-        self.backbone = nn.Sequential(*list(resnet.children())[:-1])
-        self.projection_head = BarlowTwinsProjectionHead(512, 2048, 2048)
+
+        self.backbone, self.out_dim = pipe_backbone(backbone)
+        self.prjhead_dim = prjhead_dim
+        if self.prjhead_dim:
+            self.projection_head = BarlowTwinsProjectionHead(self.out_dim, self.prjhead_dim, self.prjhead_dim)
         self.criterion = BarlowTwinsLoss()
+        self.stop_gradient = stop_gradient
 
-    def forward(self, x):
+    def forward(self, x, stop_gradient=False):
         x = self.backbone(x).flatten(start_dim=1)
-        z = self.projection_head(x)
-        return z
+        if self.prjhead_dim:
+            x = self.projection_head(x)
+        if stop_gradient:
+            x = x.detach()
+        return x
 
-    def training_step(self, batch, batch_index):
+    def training_step(self, batch, batch_idx):
         (x0, x1), _, _ = batch
         z0 = self.forward(x0)
-        z1 = self.forward(x1)
+        z1 = self.forward(x1, self.stop_gradient)
         loss = self.criterion(z0, z1)
         return loss
 
     def configure_optimizers(self):
         optim = torch.optim.SGD(self.parameters(), lr=0.06)
         return optim
-
-
-model = BarlowTwins()
-
-cifar10 = torchvision.datasets.CIFAR10("datasets/cifar10", download=True)
-transform = SimCLRTransform(input_size=32)
-dataset = LightlyDataset.from_torch_dataset(cifar10, transform=transform)
-# or create a dataset from a folder containing images or videos:
-# dataset = LightlyDataset("path/to/folder")
-
-collate_fn = MultiViewCollate()
-
-dataloader = torch.utils.data.DataLoader(
-    dataset,
-    batch_size=256,
-    collate_fn=collate_fn,
-    shuffle=True,
-    drop_last=True,
-    num_workers=8,
-)
-
-accelerator = "gpu" if torch.cuda.is_available() else "cpu"
-
-trainer = pl.Trainer(max_epochs=10, devices=1, accelerator=accelerator)
-trainer.fit(model=model, train_dataloaders=dataloader)

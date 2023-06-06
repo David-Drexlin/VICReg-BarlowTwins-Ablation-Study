@@ -1,49 +1,62 @@
-from sklearn.linear_model import SGDClassifier
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-import random
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+ 
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+def embed(x, embedding_model, device):
+        embedding_model.eval()
+        embedding_model.to(device)
+        x = x.float().to(device)   # remove the unsqueeze operation
+        return embedding_model(x).detach().cpu().numpy()
 
-def eval_KNN(root_path, X, y, fname, samples):
-    """
-    This function plots the nearest neighbors for a given number of randomly chosen samples.
+def eval_KNN(pipe_data, embedding_model, device='cuda', split=None, test=None):
+    '''
+    This function trains a KNN model and evaluates its accuracy on a test dataset.
 
     Parameters:
-    root_path (str): The root path of the image directory.
-    X (np.ndarray): The array representing the test set features.
-    y (np.ndarray): The array representing the test set labels.
-    fname (list): List of image filenames.
-    samples (int): The number of images to plot nearest neighbors for.
+    pipe_data (PipeDataset): The whole data as a PipeDataset object
+    embedding_model (torch.nn.Module): Model to create embeddings
+    device (str): Device to perform computations on. Default is 'cuda' if available.
+    split (float, optional): The ratio of samples to include in the train split.
+    test (PipeDataset, optional): The test data as a PipeDataset object
 
     Returns:
-    None
-    """
+    float: The accuracy of the model on the test data
+    '''
 
-    random_indices = random.sample(range(X.shape[0]), samples)
-    nbrs = NearestNeighbors(n_neighbors=9, algorithm='ball_tree').fit(X)
+    # Use split parameter to divide data into train and test if test is not provided
+    if split is not None and test is None:
+        train_data, test_data = pipe_data.split(split)
+    else:
+        train_data = pipe_data
+        test_data = test
 
-    for idx in random_indices:
-        distances, indices = nbrs.kneighbors(X[idx].reshape(1, -1))
-        fig, axs = plt.subplots(3, 3, figsize=(10, 10))
-        fig.suptitle('Nearest neighbors for: '+str(fname[idx][0]), fontsize=16)
-        example_label = y[idx]
-    
-        # Iterate over the neighbors
-        for i, index in enumerate(indices[0]):
-            image_path = root_path + fname[index]  # Extract the filename from the tuple and prepend the root path
-            img = mpimg.imread(image_path)
-            label = y[index]
-        
-            # Choose label color based on match with example
-            color = 'red' if label != example_label else 'black'
-        
-            # Plot image and label
-            axs[i//3, i%3].imshow(img)
-            axs[i//3, i%3].set_title('Label: '+str(label), color=color)
-            axs[i//3, i%3].axis('off')
+    # Extract features and labels from train and test data
+    print("Load the training dataset to array")
+    X_train, y_train = train_data.array[0], train_data.array[1]
+    print("Load the testing dataset to array")
+    X_test, y_test = test_data.array[0], test_data.array[1]
 
-        plt.tight_layout()
-        plt.show()
+    # Get the embeddings for train and test data
+    X_train_embedding = []
+    print("embedding the training dataset")
+    for x in tqdm(DataLoader(X_train, batch_size=128)):
+        X_train_embedding.append(embed(x, embedding_model, device))
+    X_train_embedding = np.concatenate(X_train_embedding)
+    print("embedding the test dataset")
+    X_test_embedding = []
+    for x in tqdm(DataLoader(X_test, batch_size=128)):
+        X_test_embedding.append(embed(x, embedding_model, device))
+    X_test_embedding = np.concatenate(X_test_embedding)
 
+    # Initialize the KNN Classifier
+    knn = KNeighborsClassifier()
+    print("Training in downstream")
+    # Fit the model on the training data
+    knn.fit(X_train_embedding, y_train)
+
+    # Use the trained model to predict labels for the test data
+    X_test_predicted = knn.predict(X_test_embedding)
+    accuracy = accuracy_score(y_test, X_test_predicted)
+    return accuracy

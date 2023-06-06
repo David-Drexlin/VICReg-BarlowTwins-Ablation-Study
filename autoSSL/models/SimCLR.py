@@ -1,33 +1,33 @@
-
 import pytorch_lightning as pl
 import torch
-import torchvision
 from torch import nn
-
-from lightly.data import LightlyDataset
-from lightly.data.multi_view_collate import MultiViewCollate
+from autoSSL.models.Backbone import pipe_backbone
 from lightly.loss import NTXentLoss
 from lightly.models.modules import SimCLRProjectionHead
-from lightly.transforms.simclr_transform import SimCLRTransform
-
 
 class SimCLR(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, backbone="resnet18", stop_gradient=False, prjhead_dim=2048):
         super().__init__()
-        resnet = torchvision.models.resnet18()
-        self.backbone = nn.Sequential(*list(resnet.children())[:-1])
-        self.projection_head = SimCLRProjectionHead(512, 2048, 2048)
+
+        self.backbone, self.out_dim = pipe_backbone(backbone)
+        self.prjhead_dim = prjhead_dim
+        if self.prjhead_dim:
+            self.projection_head = SimCLRProjectionHead(self.out_dim, self.prjhead_dim, self.prjhead_dim)
         self.criterion = NTXentLoss()
+        self.stop_gradient = stop_gradient
 
-    def forward(self, x):
+    def forward(self, x, stop_gradient=False):
         x = self.backbone(x).flatten(start_dim=1)
-        z = self.projection_head(x)
-        return z
+        if self.prjhead_dim:
+            x = self.projection_head(x)
+        if stop_gradient:
+            x = x.detach()
+        return x
 
-    def training_step(self, batch, batch_index):
+    def training_step(self, batch, batch_idx):
         (x0, x1), _, _ = batch
         z0 = self.forward(x0)
-        z1 = self.forward(x1)
+        z1 = self.forward(x1, self.stop_gradient)
         loss = self.criterion(z0, z1)
         return loss
 

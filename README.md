@@ -1,142 +1,144 @@
- 
-# Project Description
+## Project Description
 
-This project contains a Python-based deep learning library called `autoSSL`, designed for Self-Supervised Learning (SSL) tasks. It includes utilities for data loading, several model architectures, evaluation scripts, as well as various experiment notebooks. The project is organized into a structure that supports a flexible, scalable, and reusable workflow for SSL tasks.
+autoSSL is a versatile and accessible library for Self-Supervised Learning (SSL). This Python-based deep learning library provides you with utilities for data loading, model architectures, evaluation scripts, and numerous experiment notebooks. The design and organization of this project encourage flexible, scalable, and reusable workflows for your SSL tasks.
 
 ## Code Structure
-
 ```
 .
-├── autoSSL
-│   ├── utils
-│   │   └── dataloader2array.py
-│   │   └── ...
-│   ├── data
-│   │   └── pipe_dataloader.py
-│   │   └── ...
-│   ├── models
-│   │   ├── BYOL.py
-│   │   └── barlowtwins.py
-│   │   └── ...
-│   └── evaluate
-│       ├── eval_knn.py
-│       └── eval_linear.py
-│   │   └── ...
-├── checkpoints
-│   ├── experiment1
-│   ├── experiment2
-│   ├── ...
-├── experiments
-│   ├── experiment1.ipynb
-│   ├── experiment1.yaml 
-│   ├── experiment2.ipynb
-│   ├── experiment2.yaml 
-│   ├── ...
-├── global.yaml
-├── readme.md
-└── ...
-
-
+├── autoSSL                      # Main project folder
+│   ├── data                     # Data loading utilities
+│   │   ├── PipeDataset.py       # Dataset loading pipeline
+│   │   └── __init__.py
+│   ├── evaluate                 # Evaluation scripts
+│   │   ├── eval_KNN.py          # K-Nearest Neighbors evaluation
+│   │   ├── eval_KNNplot.py      # K-Nearest Neighbors evaluation plot
+│   │   ├── eval_linear.py       # Linear evaluation
+│   │   ├── pipe_collate.py      # Pipeline for model collation
+│   │   └── __init__.py
+│   ├── models                   # SSL model architectures
+│   │   ├── Backbone.py          # Backbone for SSL models
+│   │   ├── BarlowTwins.py       # Barlow Twins architecture
+│   │   ├── BYOL.py              # Bootstrap Your Own Latent (BYOL) architecture
+│   │   ├── MoCo.py              # Momentum Contrast (MoCo) architecture
+│   │   ├── pipe_model.py        # Model loading pipeline
+│   │   ├── SimCLR.py            # SimCLR architecture
+│   │   ├── SimSiam.py           # SimSiam architecture
+│   │   ├── VICReg.py            # VICReg architecture
+│   │   └── __init__.py
+│   ├── train                    # Training scripts
+│   │   ├── pipe_train.py        # Training pipeline
+│   │   └── __init__.py
+│   └── utils                    # Utility scripts
+│       ├── dict2transformer.py  # Function to transform dictionaries
+│       ├── embedding.py         # Embedding functions
+│       ├── join_dir.py          # Directory joining function
+│       ├── logging.py           # Logging functionalities
+│       └── __init__.py
+├── experiment                   # Experiment notebooks
+│   ├── Experiment1.ipynb
+│   ├── Experiment2.ipynb
+│   ├── experiment_checkpoints   # Checkpoints for experiments
+│   │   └── Experiment1
+│   │       ├── barlow_batch_1024
+│   │       │   ├── barlow_batch_1024
+│   │       │   │   └── version_0
+│   │       │   │       └── hparams.yaml
+│   │       │   └── config.yaml
+│   │       ├── barlow_batch_128
+│   │       │   ├── barlow_batch_128
+│   │       │   │   └── version_0
+│   │       │   │       └── hparams.yaml
+│   │       │   └── config.yaml
+│   │       └── batch_[0-9]+.csv
+│   ├── global.yaml              # Global configurations
+│   └── Unit_Test.ipynb          # Unit tests
+├── experiment_template.ipynb   # Template for creating new experiments
+├── README.md                    # This file
+├── LICENSE                      # License file
+└── Template_Legacy.ipynb        # Legacy template
 ```
-The main components of the project are contained within the `autoSSL` directory, and include:
 
-- `utils`: Utility scripts, including `dataloader2array.py` and more, for data manipulation and processing.
-- `models`: Scripts defining several model architectures including `BYOL.py`, `barlowtwins.py` and others.
-- `evaluate`: Scripts for model evaluation such as `eval_knn.py`, `eval_linear.py`, and more.
-- `pipe_dataloader`: Augmentation etc,.
-There are also a number of Jupyter notebooks contained within the `experiments` directory, each one documenting a different experiment performed with the `autoSSL` library. Associated with each experiment notebook is a corresponding YAML configuration file, allowing for localized adjustments of parameters.
+## Quick Start Guide
 
-Checkpoints from each experiment, including different model states and epochs, are stored in the `checkpoints` directory. Each checkpoint file corresponds to a specific experiment.
+### Training
 
-
-# Quick API
-
-
-
-| Model Name  | Code                                                                                 | Description                                                                                                                                                                                                              |
-| ----------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BarlowTwins | `model = BarlowTwins(backbone='ResNet', memory_bank=False, projectionhead='linear')` | Barlow Twins is a model that inherits from the `General_Model` class and utilizes the lightly model. It uses a ResNet backbone, does not employ a memory bank, and has a linear projection head.                         |
-| MoCo        | `model = MoCo(backbone='ResNet', memory_bank=True, projectionhead='MLP')`            | MoCo (Momentum Contrast) is a model that inherits from the `General_Model` class and utilizes the lightly model. It uses a ResNet backbone, employs a memory bank, and has an MLP projection head.                       |
-| SimCLR      | `model = SimCLR(backbone='ResNet', memory_bank=False, projectionhead='linear')`      | SimCLR (Simple Contrastive Learning) is a model that inherits from the `General_Model` class and utilizes the lightly model. It uses a ResNet backbone, does not employ a memory bank, and has a linear projection head. |
-| SiaSiam     | `model = SiaSiam(backbone='ResNet', memory_bank=True, projectionhead='MLP')`         | SiaSiam is a model that inherits from the `General_Model` class and utilizes the lightly model. It uses a ResNet backbone, employs a memory bank, and has an MLP projection head.                                        |
-| BYOL        | `model = BYOL(backbone='ResNet', memory_bank=False, projectionhead='linear')`        | BYOL (Bootstrap Your Own Latent) is a model that inherits from the `General_Model` class and utilizes the lightly model. It uses a ResNet backbone, does not employ a memory bank, and has a linear projection head.     |
-| vigreg      |                                                                                      |                                                                                                                                                                                                                          |
-| vigregL     | expander dimensionality.                                                             |                                                                                                                                                                                                                          |
-|             |                                                                                      |                                                                                                                                                                                                                          |
-
-momentum encoder   ,gradient stop  , batch normalization
-
-
-# Optimizing
-
-Train
-
+First, set up your own configuration. This example demonstrates a configuration for the BarlowTwins model with a batch size of 512.
 
 ```python
-from pytorch_lightning.callbacks import ModelCheckpoint
-checkpoint_callback = ModelCheckpoint(
-   monitor='train_loss',
-   dirpath='../VICReg-BarlowTwins-Ablation-Study/archi_weights/VICReg',
-   filename='cifar10-{epoch:02d}-{train_loss:.2f}',
-   save_top_k=3,
-   mode='min',
-)
+config = global_config.copy()
+SSL_augmentation = global_SSL_augmentation
+config["name"] = "barlow_batch_512"
+config["batch"] = 512
+config["model"] = "BarlowTwins"
 
-trainer = pl.Trainer(max_epochs=max_epochs, devices=1, accelerator="gpu", callbacks=[checkpoint_callback])
-trainer.fit(model, dataloader_train)
+# Load the dataset
+pdata = PipeDataset(config=config, augmentation=dict2transformer(SSL_augmentation, view=config["view"]))
+
+# Load the model
+pmodel = pipe_model(config=config)
+
+# Initialize a trainer for the model and begin training
+trainer = Trainer(config, model_mode="start")
+trainer.fit(pmodel, pdata.dataloader)
+# cONTINUE to train
+#trainer1 = Trainer(config, model_mode="continue", extra_epoch=0)
+#trainer1.fit(pmodel, pdata.dataloader, ckpt_path="latest")
 ```
- Load the Model
+
+### Evaluation
+
+Perform evaluation using the trained models:
+
 ```python
-import pytorch_lightning as pl
-
-model =VICReg()
-
-trainer = pl.Trainer(max_epochs=2, devices=1, accelerator="gpu", callbacks=[checkpoint_callback])
-trainer.fit(model, dataloader_train, dataloader_test,ckpt_path='../.ckpt')
+collate = pipe_collate(address="experiment_checkpoints/batch VS model/", reg="batch_[0-9]+")
+aaa = eval_linear(pdata, models=collate, device=global_config["device"], split=0.8)
 ```
 
-# Evaluation
+The `autoSSL.evaluate` module offers a suite of functions for model evaluation, including `eval_KNN` for K-Nearest Neighbors evaluation, `eval_KNNplot` for visualizing K-Nearest Neighbors results, and `eval_linear` for linear evaluation of the model.
 
-| Function        | Description                                 | Parameters                                                                 | Returns                                                 | Example Code                                                                                                   |
-| --------------- | ------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Eval_transfer` | Evaluates transfer learning performance     | `model`, `target_dataset`, `metric`, `top_k`, `average`                    | Evaluation score(s) based on the specified metric(s)    | `Eval_transfer(model=pretrained_model, target_dataset=(X, y), metric='accuracy')`                              |
-| `Eval_linear`   | Evaluates linear model performance          | `model`, `dataset`, `metric`, `top_k`, `average`                           | Evaluation score(s) based on the specified metric(s)    | `Eval_linear(model=linear_model, dataset=(X, y), metric='accuracy')`                                           |
-| `Eval_knn`      | Evaluates KNN model performance             | `model`, `dataset`, `metric`, `top_k`, `average`   neighbors numbers = 200 | Evaluation score(s) based on the specified metric(s)    | `Eval_knn(model=knn_model, dataset=(X, y), metric='accuracy')`                                                 |
-| `Compare_eval`  | Compares the performance of multiple models | `models`, `dataset`, `metrics`, `top_k`, `average`                         | Evaluation scores for each model and metric combination | `Compare_eval(models=[logistic_regression, knn], dataset=(X, y), metrics=['accuracy', 'precision', 'recall'])` |
-| eval_by_loss    |                                             |                                                                            |                                                         |                                                                                                                |
-| Plot Learning curve                |                                             |                                                                            |                                                         |                                                                                                                |
-
-The table above provides a summary of the functions in the `autoSSL.evaluate` module. It includes the function name, a short description of its purpose, the parameters it accepts, the returns it provides, and an example code snippet demonstrating the function's usage.
-
-# For example
-
-If we check multi modal
-
-If we check same model in differen dataset
-
-If we check different backbone
-
-If we????
-Etc,.
-
-hi there, after the meeting with Patrik, the following research topic will be our main focus:
-
-* impact of the nr. of distorted samples on the accuracy/loss
-* focus on one computationally feasible architecture (VICReg, Barlow-Twins)
-* objective function:
-    * accuracy: replacement of the decoder (projector) with a linear classifier → supervised training of the linear classifier necessary
-    * loss: keep architecture
-* preliminary study: pretraining resnet weights vs. random initializing weights
+Please explore the project and refer to the individual experiment notebooks for more detailed examples and explanations. We look forward to seeing what you will create with autoSSL!
 
 
-experiment
-it might be interesting invetigate the efficency between max_batch / view / etc,.
+### Configuration Summary
 
-To do list (future)
+ 
+1. **Project Configuration**
 
-1, Image-to-text
-2. share weight different weight different architecture
-3. Standard deviation
-4. supervised baseline
-5. 
-- 
+| Hyperparameter | Description                   | Example Values                                   | Used in Function            |
+| -------------- | ----------------------------- | ------------------------------------------------ | --------------------------- |
+| checkpoint_dir | Directory to save checkpoints | 'experiment_checkpoints/'                        | ck_callback(checkpoint_dir) |
+| experiment     | Name of the experiment        | "batch VS model"                                 | For pipe Used                        |
+| name           | Specific configuration name   | "config1"                                        | pipe_model(name=...)        |
+| log_dir        | Directory to save logs        | 'experiment_checkpoints/batch VS model/config1/' | For pipe Used                        |
+
+2. **Model Configuration**
+
+| Hyperparameter | Description | Example Values | Used in Function |
+| -------------- | ----------- | -------------- | ---------------- |
+| model | The SSL model to use | "VICReg", "MoCo", "BYOL", "SimCLR", "SimSiam", "BarlowTwins" | pipe_model(name=...) |
+| backbone | The backbone model for SSL model | "resnet18", "resnet50", "efficientnet_b5", "mobilenet_v3", "vit_64", "vit_224" | pipe_model(backbone=...) |
+| stop_gradient | Whether to stop gradient or not | True, False | pipe_model(stop_gradient=...) |
+| prjhead_dim | The dimension of projection head | 2048, 1024, 512 | pipe_model(prjhead_dim=...) |
+
+3. **Training Configuration**
+
+| Hyperparameter | Description | Example Values | Used in Function |
+| -------------- | ----------- | -------------- | ---------------- |
+| max_epochs | The maximum number of epochs for training | 5, 10, 50 | Trainer(config, model_mode, extra_epoch=...) |
+| device | The device for training | "cuda", "cpu" | eval_linear(device=...), eval_KNN(device=...), eval_KNNplot(device=...) |
+
+4. **Dataset Configuration**
+
+| Hyperparameter | Description | Example Values | Used in Function |
+| -------------- | ----------- | -------------- | ---------------- |
+| input_size | The input size for the model | 64, 128, 224 | for augmentation |
+| path_to_train_cifar10 | The path to the training dataset cifar10 | "../../Datasets/cifar10/train/" | PipeDataset(input_dir=...) |
+| path_to_test_cifar10 | The path to the testing dataset cifar10 | "../../Datasets/cifar10/test/" | PipeDataset(input_dir=...) |
+| view | The number of views for each instance | 1, 2 | dict2transformer(dict, view=...) |
+| samples | The number of samples to load from the dataset | 0, 100, 1000 | PipeDataset(samples=...) |
+| batch_size | The size of each batch during training | 512, 256, 128 | PipeDataset(batch_size=...) |
+| shuffle | Whether to shuffle the dataset | True, False | PipeDataset(shuffle=...) |
+| drop_last | Whether to drop the last incomplete batch during training | True, False | PipeDataset(drop_last=...) |
+| num_workers | The number of worker threads for data loading | 4, 8, 16 | PipeDataset(num_workers=...) |
+
+ 

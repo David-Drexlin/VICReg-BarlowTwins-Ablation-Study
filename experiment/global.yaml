@@ -1,0 +1,33 @@
+checkpoint_dir: 'experiment_checkpoints/'
+experiment: "batch VS model"
+name: "config1"
+log_dir: 'experiment_checkpoints/batch VS model/config1/'
+
+memory_bank_size: 4096
+seed: 1
+
+input_size: 64
+path_to_train_cifar10: "../../Datasets/cifar10/train/"
+path_to_test_cifar10: "../../Datasets/cifar10/test/"
+path_to_train_imagenet-mini: "../../Datasets/imagenet-mini/train/"
+path_to_test_imagenet-mini: "../../Datasets/imagenet-mini/val/"
+path_to_data_Alex_clothing: "../../Datasets/clothing"   # https://www.kaggle.com/datasets/apollo2506/eurosat-dataset
+path_to_data_sentinel: "../../Datasets/sentinel"   # https://www.kaggle.com/datasets/apollo2506/eurosat-dataset
+dataset_dir: "../../Datasets/cifar10/train/"
+
+view: 2
+samples: 0
+batch_size: 512
+shuffle: False
+drop_last : False
+num_workers: 4
+
+model: "VICReg" # ["MoCo", "BYOL", "SimCLR", "SimSiam", "BarlowTwins", "VICReg"]
+backbone: "resnet18" # ["resnet18", "resnet18_pretrained", "resnet50", "resnet50_pretrained", 
+             # "efficientnet_b5", "efficientnet_b5_pretrained", "mobilenet_v3", 
+             # "mobilenet_v3_pretrained", "vit_64", "vit_224"]
+stop_gradient: False
+prjhead_dim: 2048
+
+max_epochs: 5
+device: "cuda"
