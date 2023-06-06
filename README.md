@@ -1,5 +1,7 @@
 ## Project Description
+
 Tutorial/API ----> :  https://px39n.gitbook.io/autossl/
+
 autoSSL is a versatile and accessible library for Self-Supervised Learning (SSL). This Python-based deep learning library provides you with utilities for data loading, model architectures, evaluation scripts, and numerous experiment notebooks. The design and organization of this project encourage flexible, scalable, and reusable workflows for your SSL tasks.
 
 ## Code Structure
