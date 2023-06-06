@@ -1,0 +1,8 @@
+dir_name,ckpt_path,config_path,log_path,accuracy
+batch_1024,experiment_checkpoints/batch VS model\batch_1024\checkpoints-epoch=04-train_loss=20.29.ckpt,experiment_checkpoints/batch VS model\batch_1024\config.yaml,experiment_checkpoints/batch VS model\batch_1024\batch_1024.csv,0.21339330334832585
+batch_128,experiment_checkpoints/batch VS model\batch_128\checkpoints-epoch=04-train_loss=20.41.ckpt,experiment_checkpoints/batch VS model\batch_128\config.yaml,experiment_checkpoints/batch VS model\batch_128\batch_128.csv,0.23388305847076463
+batch_2048,experiment_checkpoints/batch VS model\batch_2048\checkpoints-epoch=04-train_loss=20.42.ckpt,experiment_checkpoints/batch VS model\batch_2048\config.yaml,experiment_checkpoints/batch VS model\batch_2048\batch_2048.csv,0.24887556221889057
+batch_256,experiment_checkpoints/batch VS model\batch_256\checkpoints-epoch=04-train_loss=20.69.ckpt,experiment_checkpoints/batch VS model\batch_256\config.yaml,experiment_checkpoints/batch VS model\batch_256\batch_256.csv,0.239880059970015
+batch_32,experiment_checkpoints/batch VS model\batch_32\checkpoints-epoch=04-train_loss=20.79.ckpt,experiment_checkpoints/batch VS model\batch_32\config.yaml,experiment_checkpoints/batch VS model\batch_32\batch_32.csv,0.223888055972014
+batch_512,experiment_checkpoints/batch VS model\batch_512\checkpoints-epoch=04-train_loss=20.49.ckpt,experiment_checkpoints/batch VS model\batch_512\config.yaml,experiment_checkpoints/batch VS model\batch_512\batch_512.csv,0.23488255872063968
+batch_64,experiment_checkpoints/batch VS model\batch_64\checkpoints-epoch=04-train_loss=20.50.ckpt,experiment_checkpoints/batch VS model\batch_64\config.yaml,experiment_checkpoints/batch VS model\batch_64\batch_64.csv,0.2318840579710145
