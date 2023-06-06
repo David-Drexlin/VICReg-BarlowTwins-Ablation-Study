@@ -141,4 +141,6 @@ Please explore the project and refer to the individual experiment notebooks for 
 | drop_last | Whether to drop the last incomplete batch during training | True, False | PipeDataset(drop_last=...) |
 | num_workers | The number of worker threads for data loading | 4, 8, 16 | PipeDataset(num_workers=...) |
 
+
+## More
  
