@@ -34,7 +34,7 @@ class ViewTransform(object):
     def __init__(self, num):
         self.num = num
         self.transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, interpolation=InterpolationMode.BICUBIC),
+            transforms.RandomResizedCrop(32, interpolation=InterpolationMode.BICUBIC),
             GaussianBlur(p=0.5),
             Solarization(p=0.5),
             transforms.RandomHorizontalFlip(p=0.5),
