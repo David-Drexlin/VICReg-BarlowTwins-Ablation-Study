@@ -1,0 +1,5 @@
+dir_name,ckpt_path,config_path,log_path,Accuracy
+VICReg_backbone_resnet18,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18\checkpoints-epoch=04-train_loss=20.43.ckpt,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18\config.yaml,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18\VICReg_backbone_resnet18.csv,0.24
+VICReg_backbone_resnet18_pretrained,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18_pretrained\checkpoints-epoch=04-train_loss=19.83.ckpt,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18_pretrained\config.yaml,experiment_checkpoints/backbone VS model\VICReg_backbone_resnet18_pretrained\VICReg_backbone_resnet18_pretrained.csv,0.26
+VICReg_backbone_vit_64,experiment_checkpoints/backbone VS model\VICReg_backbone_vit_64\checkpoints-epoch=02-train_loss=24.75.ckpt,experiment_checkpoints/backbone VS model\VICReg_backbone_vit_64\config.yaml,experiment_checkpoints/backbone VS model\VICReg_backbone_vit_64\VICReg_backbone_vit_64.csv,0.29
+Other,,,,None
