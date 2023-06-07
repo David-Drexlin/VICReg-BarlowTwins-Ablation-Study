@@ -1,0 +1,27 @@
+backbone: resnet18
+batch: 32
+batch_size: 512
+checkpoint_dir: experiment_checkpoints/
+dataset_dir: ../../Datasets/cifar10/train/
+device: cuda
+drop_last: false
+experiment: batch VS model
+input_size: 64
+log_dir: experiment_checkpoints/batch VS model\batch_32
+max_epochs: 5
+memory_bank_size: 4096
+model: VICReg
+name: batch_32
+num_workers: 4
+path_to_data_Alex_clothing: ../../Datasets/clothing
+path_to_data_sentinel: ../../Datasets/sentinel
+path_to_test_cifar10: ../../Datasets/cifar10/test/
+path_to_test_imagenet-mini: ../../Datasets/imagenet-mini/val/
+path_to_train_cifar10: ../../Datasets/cifar10/train/
+path_to_train_imagenet-mini: ../../Datasets/imagenet-mini/train/
+prjhead_dim: 2048
+samples: 0
+seed: 1
+shuffle: false
+stop_gradient: false
+view: 2
