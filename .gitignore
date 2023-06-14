@@ -4,3 +4,5 @@ __pycache__/
 *.ckpt
 logs/
 lightning_logs/
+
+.venv/
